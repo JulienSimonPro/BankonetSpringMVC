@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+
+	<aop:aspectj-autoproxy />
+	<context:component-scan base-package="com.bankonet"></context:component-scan>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+
+	<bean id="htmlreportgenerator" class="com.bankonet.report.ReportFactory" factory-method="createReport">
+		<constructor-arg index="0" value="html"></constructor-arg>
+	</bean>
+	<bean id="pdfreportgenerator" class="com.bankonet.report.ReportFactory" factory-method="createReport">
+		<constructor-arg index="0" value="pdf"></constructor-arg>
+	</bean>
+	<bean id="reportservice" class="com.bankonet.metier.ReportService" scope="prototype">
+		<!-- <property name="generator" ref="pdfreportgenerator"></property> -->
+		<constructor-arg index="0" ref="htmlreportgenerator"></constructor-arg>
+	</bean>
+
+	<!-- <bean id="client" class="com.bankonet.model.Client" autowire="byType" scope="prototype"></bean> <bean id="client" class="com.bankonet.model.Client" autowire="byName" scope="prototype"></bean> <bean 
+		id="client" class="com.bankonet.model.Client" autowire="constructor" scope="prototype"></bean> -->
+	<bean id="client" class="com.bankonet.model.Client" autowire="byName" scope="prototype"></bean>
+	<bean id="adresse" class="com.bankonet.model.Adresse" scope="prototype"></bean>
+	<bean id="dao" class="com.bankonet.dao.ClientDaoImpl">
+		<property name="entityManager">
+			<bean class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+				<property name="entityManagerFactory" ref="entityManagerFactory" />
+			</bean>
+		</property>
+	</bean>
+	<bean id="bankonetMetier" class="com.bankonet.metier.BankonetMetierImpl" scope="singleton">
+		<property name="dao" ref="dao"></property>
+	</bean>
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.SingleConnectionDataSource" destroy-method="destroy">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql:///banque" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
+		<property name="suppressClose" value="true" />
+	</bean>
+
+
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="MY_PU"></property>
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<list>
+				<value>com.bankonet.model</value>
+			</list>
+		</property>
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
+			</bean>
+		</property>
+		<property name="jpaDialect">
+			<bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect" />
+		</property>
+		<property name="jpaPropertyMap">
+			<props>
+				<prop key="eclipselink.weaving">static</prop>
+				<prop key="eclipselink.ddl-generation">create-tables</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory"></property>
+	</bean>
+
+	<bean id="bankonetController" class="com.bankonet.controller.BankonetController">
+		<property name="metier" ref="bankonetMetier"></property>
+	</bean>
+
+</beans>

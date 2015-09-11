@@ -1,0 +1,31 @@
+body {
+	width: 800px;
+	margin: auto;
+}
+
+#form {
+	border: 1px silver solid;
+}
+
+#flash {
+	border: 1px black solid;
+	padding: 5px 2px;
+}
+
+.error {
+	color: red;
+}
+
+.good {
+	color: green;
+}
+
+#prez {
+	border: 1px silver solid;
+	margin-top: 5px;
+}
+
+#prez th.border, #prez td {
+	padding: 5px;
+	border: 1px silver solid;
+}
