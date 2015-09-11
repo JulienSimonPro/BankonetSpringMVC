@@ -1,6 +1,10 @@
 package com.bankonet.model;
 
-import javax.persistence.*;
+import java.util.List;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -9,6 +13,12 @@ import javax.validation.constraints.Size;
 public class Client extends Personne {
 	@Embedded
 	private Adresse adresse;
+
+	@Embedded
+	private List<CompteEpargne> cptEp;
+
+	@Embedded
+	private List<CompteCourant> cptCr;
 
 	@Size(min = 2, max = 16)
 	@NotNull
@@ -26,6 +36,15 @@ public class Client extends Personne {
 		this.login = login;
 		this.motDePasse = motDePasse;
 		this.adresse = adresse;
+	}
+
+	public Client(Adresse adresse, List<CompteEpargne> cptEp, List<CompteCourant> cptCr, String login, String motDePasse) {
+		super();
+		this.adresse = adresse;
+		this.cptEp = cptEp;
+		this.cptCr = cptCr;
+		this.login = login;
+		this.motDePasse = motDePasse;
 	}
 
 	public String getLogin() {
@@ -54,5 +73,21 @@ public class Client extends Personne {
 
 	public void setAdresse(Adresse adresse) {
 		this.adresse = adresse;
+	}
+
+	public List<CompteEpargne> getCptEp() {
+		return cptEp;
+	}
+
+	public void setCptEp(List<CompteEpargne> cptEp) {
+		this.cptEp = cptEp;
+	}
+
+	public List<CompteCourant> getCptCr() {
+		return cptCr;
+	}
+
+	public void setCptCr(List<CompteCourant> cptCr) {
+		this.cptCr = cptCr;
 	}
 }
